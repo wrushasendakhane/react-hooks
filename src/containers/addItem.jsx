@@ -8,7 +8,7 @@ function AddItem(props) {
     e.preventDefault();
     props.onAdd({ name, amount });
     setName("");
-    setAmount(0);
+    setAmount("");
   };
 
   const changeHandler = ({ target }) => {
