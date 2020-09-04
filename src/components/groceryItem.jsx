@@ -1,5 +1,6 @@
 import React from "react";
 const groceryItem = (props) => {
+  console.log("[GroceryItem] Rendered");
   const { item } = props;
   return (
     <div className="shadow p-1 mb-1 bg-white rounded">

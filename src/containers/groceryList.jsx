@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useContext } from "react";
+import React, { useCallback, useReducer, useContext, useMemo } from "react";
 import { Fragment } from "react";
 import AddItem from "./addItem";
 import SearchItem from "../components/searchItem";
@@ -43,11 +43,12 @@ function GroceryList(props) {
     loading: false,
     error: null,
   });
+  console.log("[GroceryList] Rendered", httpState);
   const loadItems = useCallback((groceryItems) => {
     dispatch({ type: "SET", groceryItems: groceryItems });
   }, []);
 
-  const addItem = async (item) => {
+  const addItem = useCallback(async (item) => {
     try {
       dispatchHttp({ type: "HTTP_SEND" });
       const { data } = await axios.post("/groceryItems.json", item);
@@ -57,9 +58,9 @@ function GroceryList(props) {
     } catch (error) {
       dispatchHttp({ type: "HTTP_ERROR", errorMessage: error.message });
     }
-  };
+  }, []);
 
-  const removeItem = async (id) => {
+  const removeItem = useCallback(async (id) => {
     try {
       dispatchHttp({ type: "HTTP_SEND" });
       await axios.delete(`/groceryItems/${id}.json`);
@@ -68,11 +69,18 @@ function GroceryList(props) {
     } catch (error) {
       dispatchHttp({ type: "HTTP_ERROR", errorMessage: error.message });
     }
-  };
+  }, []);
 
   const clearError = () => {
     dispatch({ type: "CLEAR_ERROR" });
   };
+
+  const groceryContent = useMemo(() => {
+    return groceryItems.map((item) => {
+      return <GroceryItem key={item.id} item={item} onRemove={removeItem} />;
+    });
+  }, [groceryItems, removeItem]);
+
   return (
     <Fragment>
       {httpState.error && (
@@ -99,13 +107,9 @@ function GroceryList(props) {
         </div>
       </div>
       {groceryItems.length > 0 && <h1>Loaded Items</h1>}
-      {groceryItems.length > 0 &&
-        groceryItems.map((item) => (
-          // item.id
-          <GroceryItem key={item.id} item={item} onRemove={removeItem} />
-        ))}
+      {groceryContent}
     </Fragment>
   );
 }
 
-export default GroceryList;
+export default React.memo(GroceryList);

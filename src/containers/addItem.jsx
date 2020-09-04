@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 function AddItem(props) {
+  console.log("[AddItem] Rendered", props);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
 
@@ -68,4 +69,4 @@ function AddItem(props) {
   );
 }
 
-export default AddItem;
+export default React.memo(AddItem);
