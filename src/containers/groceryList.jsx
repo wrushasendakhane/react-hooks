@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useReducer, useContext } from "react";
 import { Fragment } from "react";
 import AddItem from "./addItem";
 import SearchItem from "../components/searchItem";
@@ -6,6 +6,7 @@ import axios from "../axios-grocery";
 
 import GroceryItem from "../components/groceryItem";
 import ErrorModal from "../components/errorModal";
+import { AuthContext } from "../context/authContext";
 
 const groceryItemsReducer = (prevState, action) => {
   switch (action.type) {
@@ -36,6 +37,7 @@ const httpReducer = (prevState, action) => {
 };
 
 function GroceryList(props) {
+  const authContext = useContext(AuthContext);
   const [groceryItems, dispatch] = useReducer(groceryItemsReducer, []);
   const [httpState, dispatchHttp] = useReducer(httpReducer, {
     loading: false,
@@ -76,7 +78,13 @@ function GroceryList(props) {
       {httpState.error && (
         <ErrorModal clearError={clearError}>{httpState.error}</ErrorModal>
       )}
-      <div className="row">
+      <button
+        className="btn btn-danger btn-block py-2"
+        onClick={() => authContext.logout()}
+      >
+        Log Out
+      </button>
+      <div className="row py-2">
         <div className="col">
           <div className="shadow p-3 mb-2 bg-white rounded">
             <AddItem onAdd={addItem} loading={httpState.loading} />
